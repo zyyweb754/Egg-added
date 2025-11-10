@@ -1,19 +1,24 @@
 #!/bin/bash
+echo "🥚 Starting Auto Egg & Nest Setup"
 
-echo "=================================="
-echo "🚀 ZYY HOSTING Egg Auto Installer"
-echo "=================================="
-
-# Check if panel exists
+# Check panel directory
 if [ ! -d "/var/www/pterodactyl" ]; then
     echo "❌ Pterodactyl panel not found!"
     exit 1
 fi
 
+cd /var/www/pterodactyl
+
+# Create nest first
+echo "📁 Creating Nest..."
+NEST_NAME="ZYY Applications"
+php artisan p:nest:create --name="$NEST_NAME" --description="Auto created nest for applications"
+
 # Create egg file
+echo "📦 Creating Egg..."
 cat > /tmp/zyy_egg.json << 'EOF'
 {
-    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    _comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
     "meta": {
         "version": "PTDL_v2",
         "update_url": null
@@ -101,15 +106,12 @@ cat > /tmp/zyy_egg.json << 'EOF'
 }
 EOF
 
-echo "📦 Importing egg to panel..."
-cd /var/www/pterodactyl
+# Import egg
 php artisan p:egg:import /tmp/zyy_egg.json
 
-if [ $? -eq 0 ]; then
-    echo "✅ Egg imported successfully!"
-    rm -f /tmp/zyy_egg.json
-    echo "🎉 ZYY HOSTING Egg ready to use!"
-else
-    echo "❌ Failed to import egg"
-    exit 1
-fi
+# Cleanup
+rm -f /tmp/zyy_egg.json
+
+echo "✅ Setup Completed!"
+echo "📁 Nest: $NEST_NAME"
+echo "🥚 Egg: ZYY NodeJS App"
